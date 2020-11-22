@@ -12,6 +12,7 @@
         clearable
     ></v-text-field>
     <v-list
+        v-if="tasks.length"
         class="pt-0"
         flat
     >
@@ -49,6 +50,16 @@
         <v-divider></v-divider>
       </div>
     </v-list>
+    <div v-else
+         class="no-tasks"
+    >
+      <v-icon
+      size="100px"
+      class="ml-10"
+      color="primary darker-2"
+      >mdi-check</v-icon>
+      <div class="text-h5 primary--text">タスクがありません</div>
+    </div>
   </div>
 </template>
 
@@ -60,21 +71,21 @@ export default {
     return {
       newTaskTitle: '',
       tasks: [
-        {
-          id: 1,
-          title: "起床",
-          done: false
-        },
-        {
-          id: 2,
-          title: "朝ごはん",
-          done: false
-        },
-        {
-          id: 3,
-          title: "歯磨き",
-          done: false
-        }
+        // {
+        //   id: 1,
+        //   title: "起床",
+        //   done: false
+        // },
+        // {
+        //   id: 2,
+        //   title: "朝ごはん",
+        //   done: false
+        // },
+        // {
+        //   id: 3,
+        //   title: "歯磨き",
+        //   done: false
+        // }
       ]
     }
   },
@@ -98,3 +109,12 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+  .no-tasks
+    position: absolute
+    left: 50%
+    top: 50%
+    transform: translate(-50%, -50%)
+    opacity: 0.5
+</style>
