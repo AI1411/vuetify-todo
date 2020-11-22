@@ -1,5 +1,16 @@
 <template>
   <div class="home">
+    <v-text-field
+        v-model="newTaskTitle"
+        @click:append="addTask"
+        @keyup.enter="addTask"
+        class="pa-3"
+        outlined
+        label="タスクを追加する"
+        append-icon="mdi-plus"
+        hide-details
+        clearable
+    ></v-text-field>
     <v-list
         class="pt-0"
         flat
@@ -47,6 +58,7 @@ export default {
   name: 'Todo',
   data() {
     return {
+      newTaskTitle: '',
       tasks: [
         {
           id: 1,
@@ -67,6 +79,15 @@ export default {
     }
   },
   methods: {
+    addTask() {
+      let newTask = {
+        id: Date.now(),
+        title: this.newTaskTitle,
+        done: false
+      }
+      this.tasks.push(newTask);
+      this.newTaskTitle = '';
+    },
     doneTask(id) {
       let task = this.tasks.filter(task => task.id === id)[0];
       task.done = !task.done;
