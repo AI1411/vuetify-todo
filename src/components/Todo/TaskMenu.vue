@@ -28,6 +28,11 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <dialog-edit
+        v-if="dialogs.edit"
+        @close="dialogs.edit = false"
+        :task="task"
+    />
     <dialog-delete
         v-if="dialogs.delete"
         @close="dialogs.delete = false"
@@ -38,13 +43,16 @@
 
 <script>
 import DialogDelete from "@/components/Todo/Dialogs/DialogDelete";
+import DialogEdit from "@/components/Todo/Dialogs/DialogEdit";
 export default {
   props: ['task'],
   components: {
-    'dialog-delete': DialogDelete
+    'dialog-delete': DialogDelete,
+    'dialog-edit': DialogEdit,
   },
   data: () => ({
     dialogs: {
+      edit: false,
       delete: false,
     },
     items: [
@@ -52,7 +60,7 @@ export default {
         title: '編集',
         icon: 'mdi-pencil',
         click() {
-          console.log('edit')
+          this.dialogs.edit = true;
         }
       },
       {
