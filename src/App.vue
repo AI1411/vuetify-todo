@@ -7,10 +7,10 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title">
-            Vuetify Todo
+            Todo
           </v-list-item-title>
           <v-list-item-subtitle>
-            Best Todo Ever!
+            TodoList
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>

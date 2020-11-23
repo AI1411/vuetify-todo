@@ -1,91 +1,26 @@
 <template>
   <div class="home">
-    <v-text-field
-        v-model="newTaskTitle"
-        @click:append="addTask"
-        @keyup.enter="addTask"
-        class="pa-3"
-        outlined
-        label="タスクを追加する"
-        append-icon="mdi-plus"
-        hide-details
-        clearable
-    ></v-text-field>
-    <v-list
+    <field-add-task/>
+    <list-tasks
         v-if="$store.state.tasks.length"
-        class="pt-0"
-        flat
-    >
-      <div
-          v-for="task in $store.state.tasks"
-          :key="task.id">
-        <v-list-item
-            @click="$store.commit('doneTask', task.done)"
-            :class="{ 'blue lighten-5': task.done }"
-        >
-          <template v-slot:default>
-            <v-list-item-action>
-              <v-checkbox
-                  :input-value="task.done"
-                  color="primary"
-              ></v-checkbox>
-            </v-list-item-action>
-
-            <v-list-item-content>
-              <v-list-item-title
-                  :class="{ 'text-decoration-line-through': task.done }"
-              >{{ task.title }}
-              </v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                  icon
-                  @click.stop="$store.commit('deleteTask', task.id)"
-              >
-                <v-icon color="primary lighten-1">mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </template>
-        </v-list-item>
-        <v-divider></v-divider>
-      </div>
-    </v-list>
-    <div v-else
-         class="no-tasks"
-    >
-      <v-icon
-      size="100px"
-      class="ml-10"
-      color="primary darker-2"
-      >mdi-check</v-icon>
-      <div class="text-h5 primary--text">タスクがありません</div>
-    </div>
+    />
+    <no-tasks
+        v-else
+    />
   </div>
 </template>
 
 <script>
+import FieldAddTask from "@/components/Todo/FieldAddTask";
+import ListTasks from "@/components/Todo/ListTasks";
+import NoTasks from "@/components/Todo/NoTasks";
 
 export default {
   name: 'Todo',
-  data() {
-    return {
-      newTaskTitle: '',
-    }
+  components: {
+    'field-add-task': FieldAddTask,
+    'list-tasks': ListTasks,
+    'no-tasks': NoTasks
   },
-  methods: {
-    addTask() {
-      this.$store.commit('addTask', this.newTaskTitle);
-      this.newTaskTitle = '';
-    }
-  }
 }
 </script>
-
-<style lang="sass">
-  .no-tasks
-    position: absolute
-    left: 50%
-    top: 50%
-    transform: translate(-50%, -50%)
-    opacity: 0.5
-</style>
