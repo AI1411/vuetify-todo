@@ -44,6 +44,7 @@
         dark
         src="mountains.jpg"
         prominent
+        height="170"
     >
       <template v-slot:img="{ props }">
         <v-img
@@ -59,7 +60,10 @@
           <search/>
         </v-row>
         <v-row>
-          <v-toolbar-title class="ml-3">Vuetify Todo</v-toolbar-title>
+          <v-toolbar-title class="ml-4 text-h4">Vuetify Todo</v-toolbar-title>
+        </v-row>
+        <v-row>
+          <live-date-time />
         </v-row>
       </v-container>
     </v-app-bar>
@@ -74,11 +78,13 @@
 <script>
 import Snackbar from "@/components/Shared/Snackbar";
 import Search from "@/components/Todo/Tools/Search";
+import LiveDateTime from "@/components/Todo/Tools/LiveDateTime";
 
 export default {
   components: {
     'snackbar': Snackbar,
-    'search': Search
+    'search': Search,
+    'live-date-time': LiveDateTime
   },
   data: () => ({
     drawer: null,
