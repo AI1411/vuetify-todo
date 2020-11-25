@@ -85,6 +85,13 @@ export default {
           this.dialogs.delete = true;
         }
       },
+      {
+        title: '並び替え',
+        icon: 'mdi-drag-horizontal-variant',
+        click() {
+          this.$store.commit('toggleSorting');
+        }
+      },
     ],
   }),
   methods: {
