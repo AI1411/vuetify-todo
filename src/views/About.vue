@@ -1,5 +1,5 @@
 <template>
   <div class="about pa-6">
-    <h1>About AI1411 Todo</h1>
+    <h1>{{ $store.state.appTitle }}</h1>
   </div>
 </template>
