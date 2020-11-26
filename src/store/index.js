@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Localbase from 'localbase'
+
+let db = new Localbase('db')
+db.config.debug = false
 
 Vue.use(Vuex)
 
@@ -10,102 +14,136 @@ export default new Vuex.Store({
     tasks: [
       {
         id: 1,
-        title: "起床",
+        title: '起床',
         done: false,
         dueDate: '2020-10-16'
       },
       {
         id: 2,
-        title: "朝ごはん",
+        title: '歯磨き',
         done: false,
-        dueDate: '2020-10-22'
+        dueDate: '2020-10-17'
       },
       {
         id: 3,
-        title: "歯磨き",
+        title: '朝ごはん',
         done: false,
-        dueDate: '2020-10-24'
+        dueDate: null
       }
     ],
     snackbar: {
       show: false,
-      text: '',
+      text: ''
     },
     sorting: false
   },
   mutations: {
     setSearch(state, value) {
-      state.search = value;
+      state.search = value
     },
-    addTask(state, newTaskTitle) {
+
+    addTask(state, newTask) {
+      state.tasks.push(newTask)
+    },
+    doneTask(state, id) {
+      let task = state.tasks.filter(task => task.id === id)[0]
+      task.done = !task.done
+    },
+    deleteTask(state, id) {
+      state.tasks = state.tasks.filter(task => task.id !== id)
+    },
+    updateTaskTitle(state, payload) {
+      let task = state.tasks.filter(task => task.id === payload.id)[0]
+      task.title = payload.title
+    },
+    updateTaskDueDate(state, payload) {
+      let task = state.tasks.filter(task => task.id === payload.id)[0]
+      task.dueDate = payload.dueDate
+    },
+    setTasks(state, tasks) {
+      state.tasks = tasks
+    },
+
+    showSnackbar(state, text) {
+      let timeout = 0
+      if (state.snackbar.show) {
+        state.snackbar.show = false
+        timeout = 300
+      }
+      setTimeout(() => {
+        state.snackbar.show = true
+        state.snackbar.text = text
+      }, timeout)
+    },
+    hideSnackbar(state) {
+      state.snackbar.show = false
+    },
+
+    toggleSorting(state) {
+      state.sorting = !state.sorting
+    }
+  },
+  actions: {
+    addTask({ commit }, newTaskTitle) {
       let newTask = {
         id: Date.now(),
         title: newTaskTitle,
         done: false,
         dueDate: null
       }
-      state.tasks.push(newTask);
+      db.collection('tasks').add(newTask).then(() => {
+        commit('addTask', newTask)
+        commit('showSnackbar', 'タスクを追加しました')
+      })
     },
-    doneTask(state, id) {
-      let task = state.tasks.filter(task => task.id === id)[0];
-      task.done = !task.done;
+    doneTask({ state, commit }, id) {
+      let task = state.tasks.filter(task => task.id === id)[0]
+      db.collection('tasks').doc({ id: id }).update({
+        done: !task.done
+      }).then(() => {
+        commit('doneTask', id)
+      })
     },
-    deleteTask(state, id) {
-      state.tasks = state.tasks.filter(task => task.id !== id);
+    deleteTask({ commit }, id) {
+      db.collection('tasks').doc({ id: id }).delete().then(() => {
+        commit('deleteTask', id)
+        commit('showSnackbar', 'タスクを削除しました')
+      })
     },
-    updateTaskTitle(state, payload) {
-      let task = state.tasks.filter(task => task.id === payload.id)[0];
-      task.title = payload.title;
+    updateTaskTitle({ commit }, payload) {
+      db.collection('tasks').doc({ id: payload.id }).update({
+        title: payload.title
+      }).then(() => {
+        commit('updateTaskTitle', payload)
+        commit('showSnackbar', 'タスクを更新しました')
+      })
     },
-    updateTaskDueDate(state, payload) {
-      let task = state.tasks.filter(task => task.id === payload.id)[0];
-      task.dueDate = payload.dueDate;
+    updateTaskDueDate({ commit }, payload) {
+      db.collection('tasks').doc({ id: payload.id }).update({
+        dueDate: payload.dueDate
+      }).then(() => {
+        commit('updateTaskDueDate', payload)
+        commit('showSnackbar', '期限を更新しました')
+      })
     },
-    setTasks(state, tasks) {
-      state.tasks = tasks;
+    setTasks({ commit }, tasks) {
+      db.collection('tasks').set(tasks)
+      commit('setTasks', tasks)
     },
-    showSnackbar(state, text) {
-      let timeout = 0;
-      if (state.snackbar.show) {
-        state.snackbar.show = false;
-        timeout = 300;
-      }
-      setTimeout(() => {
-        state.snackbar.show = true;
-        state.snackbar.text = text;
-      }, timeout)
-    },
-    hideSnackbar(state) {
-      state.snackbar.show = false;
-    },
-    toggleSorting(state) {
-      state.sorting = !state.sorting;
-    }
-  },
-  actions: {
-    addTask({commit}, newTaskTitle) {
-      commit('addTask', newTaskTitle);
-      commit('showSnackbar', 'タスクを追加しました');
-    },
-    deleteTask({commit}, id) {
-      commit('deleteTask', id);
-      commit('showSnackbar', 'タスクを削除しました');
-    },
-    updateTaskTitle({commit}, payload) {
-      commit('updateTaskTitle', payload);
-      commit('showSnackbar', '編集しました')
-    },
-    updateTaskDueDate({commit}, payload) {
-      commit('updateTaskDueDate', payload);
-      commit('showSnackbar', '期限を設定しました')
+    getTasks({ commit }) {
+      db.collection('tasks').get().then(tasks => {
+        commit('setTasks', tasks)
+      })
     }
   },
   getters: {
     tasksFiltered(state) {
       if (!state.search) {
-        return state.tasks;
+        return state.tasks
       }
-      return state.tasks.filter(task => task.title.toLowerCase().includes(state.search));
+      return state.tasks.filter(task =>
+          task.title.toLowerCase().includes(state.search.toLowerCase())
+      )
     }
   }
 })
