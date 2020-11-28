@@ -92,6 +92,7 @@ export default {
     drawer: null,
     items: [
       {title: 'Todo', icon: 'mdi-format-list-checks', to: '/'},
+      {title: 'about', icon: 'mdi-format-list-checks', to: '/about'},
     ],
   }),
   mounted() {
